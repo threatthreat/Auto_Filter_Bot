@@ -9,7 +9,6 @@ import time
 import pytz
 from .pm_filter import auto_filter 
 from Script import script
-from bot import app
 from datetime import datetime
 from database.refer import referdb
 from database.topdb import silentdb
@@ -27,12 +26,6 @@ logger = logging.getLogger(__name__)
 
 TIMEZONE = "Asia/Kolkata"
 BATCH_FILES = {}
-
-@app.on_callback_query()
-async def callback_handler(client, query: CallbackQuery):
-    if query.data == "seeplans":
-        await query.message.reply_text("/plan")
-        await query.answer()  # dismisses the loading spinner
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
@@ -244,7 +237,7 @@ async def start(client, message):
                 InlineKeyboardButton(text="✅ ᴠᴇʀɪғʏ ✅", url=verify),
                 InlineKeyboardButton(text="ʜᴏᴡ ᴛᴏ ᴠᴇʀɪғʏ❓", url=howtodownload)
                 ],[
-                InlineKeyboardButton(text="😁 ʙᴜʏ sᴜʙsᴄʀɪᴘᴛɪᴏɴ - ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ 😁", callback_data='seeplans'),
+                InlineKeyboardButton(text="😁 ʙᴜʏ sᴜʙsᴄʀɪᴘᴛɪᴏɴ - ɴᴏ ɴᴇᴇᴅ ᴛᴏ ᴠᴇʀɪғʏ 😁", callback_data='premium'),
             ]]
                 reply_markup=InlineKeyboardMarkup(buttons)
                 if await db.user_verified(user_id): 
