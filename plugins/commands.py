@@ -27,6 +27,12 @@ logger = logging.getLogger(__name__)
 TIMEZONE = "Asia/Kolkata"
 BATCH_FILES = {}
 
+@app.on_callback_query()
+async def callback_handler(client, query: CallbackQuery):
+    if query.data == "seeplans":
+        await query.message.reply_text("/plan")
+        await query.answer()  # dismisses the loading spinner
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     if EMOJI_MODE:
