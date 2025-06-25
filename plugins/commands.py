@@ -67,7 +67,7 @@ async def start(client, message):
             )
         )
 
-        btn = [[InlineKeyboardButton(\"✅ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ɢᴇᴛ ꜰɪʟᴇ ✅\", url=verifiedfiles)]]
+        btn = [[InlineKeyboardButton("✅ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ɢᴇᴛ ꜰɪʟᴇ ✅", url=verifiedfiles)]]
         reply_markup = InlineKeyboardMarkup(btn)
 
         dlt = await m.reply_photo(
