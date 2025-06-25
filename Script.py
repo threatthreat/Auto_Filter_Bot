@@ -122,7 +122,8 @@ class script(object):
 • /reset_group - ʀᴇꜱᴇᴛ ʏᴏᴜʀ ꜱᴇᴛᴛɪɴɢꜱ.
 • /details - ᴄʜᴇᴄᴋ ʏᴏᴜʀ ꜱᴇᴛᴛɪɴɢꜱ."""
     
-     VERIFICATION_TEXT = """<b><i>👋 ʜᴇʏ {},
+
+    VERIFICATION_TEXT = """<b><i>👋 ʜᴇʏ {},
 
 📌 ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴠᴇʀɪꜰɪᴇᴅ ᴛᴏᴅᴀʏ, ᴘʟᴇᴀꜱᴇ ᴄʟɪᴄᴋ ᴏɴ ᴠᴇʀɪꜰʏ & ɢᴇᴛ ᴜɴʟɪᴍɪᴛᴇᴅ ᴀᴄᴄᴇꜱꜱ ꜰᴏʀ ᴛɪʟʟ ɴᴇxᴛ ᴠᴇʀɪꜰɪᴄᴀᴛɪᴏɴ.
 
@@ -159,6 +160,7 @@ class script(object):
 📆 ᴅᴀᴛᴇ:- <code>{} </code>
 
 #Verificaton_{}_Completed"""
+
 
     ALL_FILTERS = """
 ʜᴇʏ {}, ᴛʜɪꜱ ᴀʀᴇ ᴍʏ ᴛʜʀᴇᴇ ᴛʏᴘᴇꜱ ᴏꜰ ꜰɪʟᴛᴇʀꜱ."""
