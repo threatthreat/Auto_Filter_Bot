@@ -42,31 +42,35 @@ async def start(client, message):
             await message.reply("<b>ʟɪɴᴋ ᴇxᴘɪʀᴇᴅ ᴛʀʏ ᴀɢᴀɪɴ...</b>")
             return  
         ist_timezone = pytz.timezone('Asia/Kolkata')
-        if await db.user_verified(user_id):
-            key = "third_time_verified"
-        else:
-            key = "second_time_verified" if await db.is_user_verified(user_id) else "last_verified"
+        key = "second_time_verified" if await db.is_user_verified(user_id) else "last_verified"
         current_time = datetime.now(tz=ist_timezone)
-        result = await db.update_notcopy_user(user_id, {key:current_time})
-        await db.update_verify_id_info(user_id, verify_id, {"verified":True})
-        if key == "third_time_verified": 
-            num = 3 
-        else: 
-            num =  2 if key == "second_time_verified" else 1 
-        if key == "third_time_verified": 
-            msg = script.THIRDT_VERIFY_COMPLETE_TEXT
-        else:
-            msg = script.SECOND_VERIFY_COMPLETE_TEXT if key == "second_time_verified" else script.VERIFY_COMPLETE_TEXT
-        if message.command[1].startswith('sendall'):
-            verifiedfiles = f"https://telegram.me/{temp.U_NAME}?start=allfiles_{grp_id}_{file_id}"
-        else:
-            verifiedfiles = f"https://telegram.me/{temp.U_NAME}?start=file_{grp_id}_{file_id}"
-        await client.send_message(settings['log'], script.VERIFIED_LOG_TEXT.format(m.from_user.mention, user_id, datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d %B %Y'), num))
-        btn = [[
-            InlineKeyboardButton("✅ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ɢᴇᴛ ꜰɪʟᴇ ✅", url=verifiedfiles),
-        ]]
-        reply_markup=InlineKeyboardMarkup(btn)
-        dlt=await m.reply_photo(
+
+        await db.update_notcopy_user(user_id, {key: current_time})
+        await db.update_verify_id_info(user_id, verify_id, {"verified": True})
+
+        num = 2 if key == "second_time_verified" else 1
+        msg = script.SECOND_VERIFY_COMPLETE_TEXT if key == "second_time_verified" else script.VERIFY_COMPLETE_TEXT
+
+        verifiedfiles = (
+            f"https://telegram.me/{temp.U_NAME}?start=file_{grp_id}_{file_id}"
+            if message.command[1].startswith('notcopy')
+            else f"https://telegram.me/{temp.U_NAME}?start=allfiles_{grp_id}_{file_id}"
+        )
+
+        await client.send_message(
+            settings['log'],
+            script.VERIFIED_LOG_TEXT.format(
+                m.from_user.mention,
+                user_id,
+                datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d %B %Y'),
+                num
+            )
+        )
+
+        btn = [[InlineKeyboardButton(\"✅ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ɢᴇᴛ ꜰɪʟᴇ ✅\", url=verifiedfiles)]]
+        reply_markup = InlineKeyboardMarkup(btn)
+
+        dlt = await m.reply_photo(
             photo=(VERIFY_IMG),
             caption=msg.format(message.from_user.mention, get_readable_time(TWO_VERIFY_GAP)),
             reply_markup=reply_markup,
@@ -74,7 +78,8 @@ async def start(client, message):
         )
         await asyncio.sleep(300)
         await dlt.delete()
-        return         
+        return
+         
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         silenxbotz=await message.reply_sticker("CAACAgEAAxkBAAENpaZnl898tVVOj-69IH89gx-8ee-CCAACWwIAAu8vQEXX2jgCrI2F-jYE")
         await asyncio.sleep(5)
