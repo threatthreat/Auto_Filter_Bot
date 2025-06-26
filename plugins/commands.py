@@ -14,7 +14,7 @@ from database.refer import referdb
 from database.topdb import silentdb
 from pyrogram.enums import ParseMode, ChatType
 from pyrogram import Client, filters, enums
-from pyrogram.errors import FloodWait
+from pyrogram.errors import FloodWait, ChatAdminRequired
 from pyrogram.types import *
 from database.ia_filterdb import Media, Media2, get_file_details, unpack_new_file_id, get_bad_files
 from database.users_chats_db import db
@@ -32,6 +32,7 @@ async def start(client, message):
     if EMOJI_MODE:
         await message.react(emoji=random.choice(REACTIONS), big=True)
     m = message
+
     if len(m.command) == 2 and m.command[1].startswith(('notcopy', 'sendall')):
         _, userid, verify_id, file_id = m.command[1].split("_", 3)
         user_id = int(userid)
@@ -79,7 +80,7 @@ async def start(client, message):
         await asyncio.sleep(300)
         await dlt.delete()
         return
-         
+
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         silenxbotz=await message.reply_sticker("CAACAgEAAxkBAAENpaZnl898tVVOj-69IH89gx-8ee-CCAACWwIAAu8vQEXX2jgCrI2F-jYE")
         await asyncio.sleep(5)
@@ -89,9 +90,11 @@ async def start(client, message):
             await client.send_message(LOG_CHANNEL, script.LOG_TEXT_G.format(message.chat.title, message.chat.id, total, "Unknown"))       
             await db.add_chat(message.chat.id, message.chat.title)
         return 
+
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+
     if len(message.command) != 2:
         buttons = [[
                     InlineKeyboardButton('+ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ +', url=f'http://telegram.me/{temp.U_NAME}?startgroup=true')
@@ -113,7 +116,7 @@ async def start(client, message):
             reply_to_message_id=message.id
         )
         return
-        
+
     if message.command[1].startswith("reff_"):
         try:
             user_id = int(message.command[1].split("_")[1])
@@ -121,54 +124,54 @@ async def start(client, message):
             await message.reply_text("Invalid refer!")
             return
         if user_id == message.from_user.id:
-            await message.reply_text("Hᴇʏ Dᴜᴅᴇ, Yᴏᴜ Cᴀɴ'ᴛ Rᴇғᴇʀ Yᴏᴜʀsᴇʟғ 🤣!\n\nsʜᴀʀᴇ ʟɪɴᴋ ʏᴏᴜʀ ғʀɪᴇɴᴅ ᴀɴᴅ ɢᴇᴛ 10 ʀᴇғᴇʀʀᴀʟ ᴘᴏɪɴᴛ ɪғ ʏᴏᴜ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛɪɴɢ 100 ʀᴇғᴇʀʀᴀʟ ᴘᴏɪɴᴛs ᴛʜᴇɴ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ 1 ᴍᴏɴᴛʜ ғʀᴇᴇ ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀsʜɪᴘ.")
+            await message.reply_text("You can't refer yourself!")
             return
         if referdb.is_user_in_list(message.from_user.id):
-            await message.reply_text("Yᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴀʟʀᴇᴀᴅʏ ɪɴᴠɪᴛᴇᴅ ❗")
+            await message.reply_text("You have already been invited!")
             return
         try:
             uss = await client.get_users(user_id)
         except Exception:
-            return 	    
+            return         
         referdb.add_user(message.from_user.id)
         fromuse = referdb.get_refer_points(user_id) + 10
         if fromuse == 100:
             referdb.add_refer_points(user_id, 0) 
-            await message.reply_text(f"🎉 𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀! 𝗬𝗼𝘂 𝘄𝗼𝗻 𝟭𝟬 𝗥𝗲𝗳𝗲𝗿𝗿𝗮𝗹 𝗽𝗼𝗶𝗻𝘁 𝗯𝗲𝗰𝗮𝘂𝘀𝗲 𝗬𝗼𝘂 𝗵𝗮𝘃𝗲 𝗯𝗲𝗲𝗻 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝗜𝗻𝘃𝗶𝘁𝗲𝗱 ☞ {uss.mention}!")		    
-            await message.reply_text(user_id, f"You have been successfully invited by {message.from_user.mention}!") 	
+            await message.reply_text(f"🎉 Congrats! You invited ☞ {uss.mention} and earned 10 points.")            
+            await message.reply_text(user_id, f"You've been invited by {message.from_user.mention}!")     
             seconds = 2592000
             if seconds > 0:
-                expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
+                expiry_time = datetime.now() + timedelta(seconds=seconds)
                 user_data = {"id": user_id, "expiry_time": expiry_time}
-                await db.update_user(user_data)		    
+                await db.update_user(user_data)            
                 await client.send_message(
-                chat_id=user_id,
-                text=f"<b>Hᴇʏ {uss.mention}\n\nYᴏᴜ ɢᴏᴛ 1 ᴍᴏɴᴛʜ ᴘʀᴇᴍɪᴜᴍ sᴜʙsᴄʀɪᴘᴛɪᴏɴ ʙʏ ɪɴᴠɪᴛɪɴɢ 10 ᴜsᴇʀs ❗", disable_web_page_preview=True              
+                    chat_id=user_id,
+                    text=f"<b>Hey {uss.mention},
+You got 1 month premium subscription by inviting 10 users!</b>",
+                    disable_web_page_preview=True
                 )
             for admin in ADMINS:
-                await client.send_message(chat_id=admin, text=f"Sᴜᴄᴄᴇss ғᴜʟʟʏ ᴛᴀsᴋ ᴄᴏᴍᴘʟᴇᴛᴇᴅ ʙʏ ᴛʜɪs ᴜsᴇʀ:\n\nuser Nᴀᴍᴇ: {uss.mention}\n\nUsᴇʀ ɪᴅ: {uss.id}!")	
+                await client.send_message(chat_id=admin, text=f"Task done by user:
+Name: {uss.mention}
+ID: {uss.id}!")    
         else:
             referdb.add_refer_points(user_id, fromuse)
-            await message.reply_text(f"You have been successfully invited by {uss.mention}!")
-            await client.send_message(user_id, f"𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀! 𝗬𝗼𝘂 𝘄𝗼𝗻 𝟭𝟬 𝗥𝗲𝗳𝗲𝗿𝗿𝗮𝗹 𝗽𝗼𝗶𝗻𝘁 𝗯𝗲𝗰𝗮𝘂𝘀𝗲 𝗬𝗼𝘂 𝗵𝗮𝘃𝗲 𝗯𝗲𝗲𝗻 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝗜𝗻𝘃𝗶𝘁𝗲𝗱 ☞{message.from_user.mention}!")
+            await message.reply_text(f"You've been invited by {uss.mention}!")
+            await client.send_message(user_id, f"Congrats! You invited ☞{message.from_user.mention}!")
         return
-        
-        
+
     if len(message.command) == 2 and message.command[1].startswith('getfile'):
         movies = message.command[1].split("-", 1)[1] 
-        movie = movies.replace('-',' ')
+        movie = movies.replace('-', ' ')
         message.text = movie 
         await auto_filter(client, message) 
         return
-            
-    data = message.command[1]
-    try:
-        pre, grp_id, file_id = data.split('_', 2)
-    except:
-        pre, grp_id, file_id = "", 0, data
 
     try:
-        settings = await get_settings(int(data.split("_", 2)[1]))
+        pre, grp_id, file_id = message.command[1].split('_', 2)
+        grp_id = int(grp_id)
+        settings = await get_settings(grp_id)
+
         if settings.get('fsub_id', AUTH_CHANNEL) == AUTH_REQ_CHANNEL:
             if AUTH_REQ_CHANNEL and not await is_req_subscribed(client, message):
                 try:
@@ -176,9 +179,7 @@ async def start(client, message):
                 except ChatAdminRequired:
                     logger.error("Make sure Bot is admin in Forcesub channel")
                     return
-                btn = [[
-                    InlineKeyboardButton("⛔️ ᴊᴏɪɴ ɴᴏᴡ ⛔️", url=invite_link.invite_link)
-                ]]
+                btn = [[InlineKeyboardButton("⛔️ ᴊᴏɪɴ ɴᴏᴡ ⛔️", url=invite_link.invite_link)]]
                 if message.command[1] != "subscribe":
                     btn.append([InlineKeyboardButton("♻️ ᴛʀʏ ᴀɢᴀɪɴ ♻️", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
                 await client.send_photo(
@@ -186,91 +187,79 @@ async def start(client, message):
                     photo=random.choice(FSUB_IMG),
                     caption=script.FORCESUB_TEXT,
                     reply_markup=InlineKeyboardMarkup(btn),
-                    parse_mode=enums.ParseMode.HTML,
-                    reply_to_message_id=message.id
+                    parse_mode=enums.ParseMode.HTML
                 )
                 return
         else:
-            id = settings.get('fsub_id', AUTH_CHANNEL)
-            channel = int(id)
+            channel = int(settings.get('fsub_id', AUTH_CHANNEL))
             btn = []
             if channel != AUTH_CHANNEL and not await is_subscribed(client, message.from_user.id, channel):
                 invite_link_custom = await client.create_chat_invite_link(channel)
                 btn.append([InlineKeyboardButton("⛔️ ᴊᴏɪɴ ɴᴏᴡ ⛔️", url=invite_link_custom.invite_link)])
-            
+
             if not await is_req_subscribed(client, message):
                 invite_link_default = await client.create_chat_invite_link(int(AUTH_CHANNEL), creates_join_request=True)
                 btn.append([InlineKeyboardButton("⛔️ ᴊᴏɪɴ ɴᴏᴡ ⛔️", url=invite_link_default.invite_link)])
-            
+
             if message.command[1] != "subscribe" and (await is_req_subscribed(client, message) is False or await is_subscribed(client, message.from_user.id, channel) is False):
                 btn.append([InlineKeyboardButton("♻️ ᴛʀʏ ᴀɢᴀɪɴ ♻️", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
+
             if btn:
                 await client.send_photo(
                     chat_id=message.from_user.id,
                     photo=random.choice(FSUB_IMG),
                     caption=script.FORCESUB_TEXT,
                     reply_markup=InlineKeyboardMarkup(btn),
-                    parse_mode=enums.ParseMode.HTML,
-                    reply_to_message_id=message.id
+                    parse_mode=enums.ParseMode.HTML
                 )
                 return
-    except Exception as n:
-        await log_error(client, f"Got Error In Force Subscription Funtion.\n\n Error - {n}")
-        print(f"Error In Fsub :- {n}")
-try:
-    user_id = m.from_user.id
-    if not await db.has_premium_access(user_id):
-        grp_id = int(grp_id)
-        user_verified = await db.is_user_verified(user_id)
-        settings = await get_settings(grp_id)
-        is_second_shortener = await db.use_second_shortener(user_id, settings.get('verify_time', TWO_VERIFY_GAP))
 
-        if settings.get("is_verify", IS_VERIFY) and (not user_verified or is_second_shortener):
-            verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-            await db.create_verify_id(user_id, verify_id)
-            temp.VERIFICATIONS[user_id] = grp_id
-
-            if message.command[1].startswith('allfiles'):
-                verify = await get_shortlink(
-                    f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}",
-                    grp_id,
-                    is_second_shortener
+        # Now do verification check
+        user_id = m.from_user.id
+        if not await db.has_premium_access(user_id):
+            user_verified = await db.is_user_verified(user_id)
+            is_second_shortener = await db.use_second_shortener(user_id, settings.get('verify_time', TWO_VERIFY_GAP))
+            if settings.get("is_verify", IS_VERIFY) and (not user_verified or is_second_shortener):
+                verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+                await db.create_verify_id(user_id, verify_id)
+                temp.VERIFICATIONS[user_id] = grp_id
+                if message.command[1].startswith('allfiles'):
+                    verify = await get_shortlink(
+                        f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}",
+                        grp_id,
+                        is_second_shortener
+                    )
+                else:
+                    verify = await get_shortlink(
+                        f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}",
+                        grp_id,
+                        is_second_shortener
+                    )
+                howtodownload = settings.get('tutorial_2', TUTORIAL_2) if is_second_shortener else settings.get('tutorial', TUTORIAL)
+                buttons = [
+                    [InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)],
+                    [InlineKeyboardButton(text="⁉️ ʜᴏᴡ ᴛᴏ ᴠᴇʀɪꜰʏ ⁉️", url=howtodownload)]
+                ]
+                reply_markup = InlineKeyboardMarkup(buttons)
+                if await db.user_verified(user_id):
+                    msg = script.SECOND_VERIFICATION_TEXT
+                else:
+                    msg = script.VERIFICATION_TEXT
+                n = await m.reply_text(
+                    text=msg.format(message.from_user.mention),
+                    protect_content=True,
+                    reply_markup=reply_markup,
+                    parse_mode=enums.ParseMode.HTML
                 )
-            else:
-                verify = await get_shortlink(
-                    f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}",
-                    grp_id,
-                    is_second_shortener
-                )
+                await asyncio.sleep(300)
+                await n.delete()
+                await m.delete()
+                return
 
-            howtodownload = settings.get('tutorial_2', TUTORIAL_2) if is_second_shortener else settings.get('tutorial', TUTORIAL)
-
-            buttons = [
-                [InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)],
-                [InlineKeyboardButton(text="⁉️ ʜᴏᴡ ᴛᴏ ᴠᴇʀɪꜰʏ ⁉️", url=howtodownload)]
-            ]
-            reply_markup = InlineKeyboardMarkup(buttons)
-
-            if await db.user_verified(user_id):
-                msg = script.SECOND_VERIFICATION_TEXT
-            else:
-                msg = script.VERIFICATION_TEXT
-
-            n = await m.reply_text(
-                text=msg.format(message.from_user.mention),
-                protect_content=True,
-                reply_markup=reply_markup,
-                parse_mode=enums.ParseMode.HTML
-            )
-            await asyncio.sleep(300)
-            await n.delete()
-            await m.delete()
-            return
-
-except Exception as e:
-    await log_error(client, f"Got Error In Verification Function.\n\n Error - {e}")
-    print(f"Error In Verification - {e}")
-    await message.reply_text("Something went wrong! Please message @SilentXBotz_Support.")
+    except Exception as e:
+        await log_error(client, f"Got Error In Verification Function.\n\n Error - {e}")
+        print(f"Error In Verification - {e}")
+        await message.reply_text("Something went wrong! Please message @SilentXBotz_Support.")
 
     if data.split("-", 1)[0] == "BATCH":
         sts = await message.reply("<b>Please wait...</b>")
