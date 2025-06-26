@@ -136,20 +136,22 @@ async def start(client, message):
         referdb.add_user(message.from_user.id)
         fromuse = referdb.get_refer_points(user_id) + 10
         if fromuse == 100:
-            referdb.add_refer_points(user_id, 0) 
-            await message.reply_text(f"🎉 Congrats! You invited ☞ {uss.mention} and earned 10 points.")            
-            await message.reply_text(user_id, f"You've been invited by {message.from_user.mention}!")     
-            seconds = 2592000
-            if seconds > 0:
-                expiry_time = datetime.now() + timedelta(seconds=seconds)
-                user_data = {"id": user_id, "expiry_time": expiry_time}
-                await db.update_user(user_data)            
-                await client.send_message(
-                    chat_id=user_id,
-                    text = f"""<b>Hey {uss.mention},
-You got 1 month premium subscription by inviting 10 users!</b>"""
-                    disable_web_page_preview=True
-                )
+    referdb.add_refer_points(user_id, 0) 
+    await message.reply_text(f"🎉 Congrats! You invited ☞ {uss.mention} and earned 10 points.")            
+    await message.reply_text(user_id, f"You've been invited by {message.from_user.mention}!")     
+    seconds = 2592000
+    if seconds > 0:
+        expiry_time = datetime.now() + timedelta(seconds=seconds)
+        user_data = {"id": user_id, "expiry_time": expiry_time}
+        await db.update_user(user_data)            
+        await client.send_message(
+            chat_id=user_id,
+            text = f"""<b>Hey {uss.mention},
+
+You got 1 month premium subscription by inviting 10 users!</b>""",
+            disable_web_page_preview=True,
+            parse_mode=enums.ParseMode.HTML
+        )
             for admin in ADMINS:
                 await client.send_message(
     chat_id=admin,
