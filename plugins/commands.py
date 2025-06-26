@@ -135,9 +135,9 @@ async def start(client, message):
             return         
         referdb.add_user(message.from_user.id)
         fromuse = referdb.get_refer_points(user_id) + 10
-        if fromuse == 100:
+       if fromuse == 100:
     referdb.add_refer_points(user_id, 0) 
-    await message.reply_text(f"🎉 Congrats! You invited ☞ {uss.mention} and earned 10 points.")            
+    await message.reply_text(f"🎉 Congrats! You invited ☞ {uss.mention} and earned 10 points.")
     await message.reply_text(user_id, f"You've been invited by {message.from_user.mention}!")     
     seconds = 2592000
     if seconds > 0:
@@ -152,6 +152,7 @@ You got 1 month premium subscription by inviting 10 users!</b>""",
             disable_web_page_preview=True,
             parse_mode=enums.ParseMode.HTML
         )
+
             for admin in ADMINS:
                 await client.send_message(
     chat_id=admin,
