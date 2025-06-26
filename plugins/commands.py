@@ -146,8 +146,8 @@ async def start(client, message):
                 await db.update_user(user_data)            
                 await client.send_message(
                     chat_id=user_id,
-                    text=f"<b>Hey {uss.mention},
-You got 1 month premium subscription by inviting 10 users!</b>",
+                    text = f"""<b>Hey {uss.mention},
+You got 1 month premium subscription by inviting 10 users!</b>"""
                     disable_web_page_preview=True
                 )
             for admin in ADMINS:
