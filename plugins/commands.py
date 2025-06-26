@@ -217,10 +217,9 @@ async def start(client, message):
     except Exception as n:
         await log_error(client, f"Got Error In Force Subscription Funtion.\n\n Error - {n}")
         print(f"Error In Fsub :- {n}")
-
+try:
     user_id = m.from_user.id
-if not await db.has_premium_access(user_id):
-    try:
+    if not await db.has_premium_access(user_id):
         grp_id = int(grp_id)
         user_verified = await db.is_user_verified(user_id)
         settings = await get_settings(grp_id)
@@ -267,10 +266,11 @@ if not await db.has_premium_access(user_id):
             await n.delete()
             await m.delete()
             return
-        except Exception as e:
-            await log_error(client, f"Got Error In Verification Funtion.\n\n Error - {e}")
-            print(f"Error In Verification - {e}")
-            await message.reply_text(f"Something Want Wrong ! Message Here - @SilentXBotz_Support")
+
+except Exception as e:
+    await log_error(client, f"Got Error In Verification Function.\n\n Error - {e}")
+    print(f"Error In Verification - {e}")
+    await message.reply_text("Something went wrong! Please message @SilentXBotz_Support.")
 
     if data.split("-", 1)[0] == "BATCH":
         sts = await message.reply("<b>Please wait...</b>")
