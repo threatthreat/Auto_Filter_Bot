@@ -228,23 +228,18 @@ async def start(client, message):
                     verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
                 else:
                     verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
-try:
-    # some logic above
-    if user_verified and is_second_shortener:
-        msg = script.SECOND_VERIFICATION_TEXT
-        howtodownload = settings.get('tutorial_2', TUTORIAL_2)
-    else:
-        msg = script.VERIFICATION_TEXT
-        howtodownload = settings.get('tutorial', TUTORIAL)
-
-buttons = [[
-    InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)
-],[ 
-    InlineKeyboardButton(text="⁉️ ʜᴏᴡ ᴛᴏ ᴠᴇʀɪꜰʏ ⁉️", url=howtodownload)
-]]
-
-reply_markup = InlineKeyboardMarkup(buttons)
-
+                
+                howtodownload = settings.get('tutorial_2', TUTORIAL_2) if is_second_shortener else settings.get('tutorial', TUTORIAL)
+                
+                buttons = [[
+                    InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)
+                ],[
+                    InlineKeyboardButton(text="⁉️ ʜᴏᴡ ᴛᴏ ᴠᴇʀɪꜰʏ ⁉️", url=howtodownload)
+                ]]
+                
+                reply_markup=InlineKeyboardMarkup(buttons)
+                msg = script.SECOND_VERIFICATION_TEXT if is_second_shortener else script.VERIFICATION_TEXT
+                
                 n=await m.reply_text(
                     text=msg.format(message.from_user.mention),
                     protect_content = True,
