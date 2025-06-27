@@ -1,5 +1,6 @@
 import os
-import re, sys
+import re
+import sys
 import json
 import base64
 import logging
@@ -27,37 +28,69 @@ logger = logging.getLogger(__name__)
 TIMEZONE = "Asia/Kolkata"
 BATCH_FILES = {}
 
+async def second_verification_timeout(client, user_id, grp_id, timeout):
+    await asyncio.sleep(timeout)
+    if not await db.is_second_verified(user_id):
+        try:
+            await client.ban_chat_member(grp_id, user_id)
+            await client.send_message(
+                grp_id, 
+                f"❌ User {user_id} failed to complete 2nd verification in time!"
+            )
+        except Exception as e:
+            logger.error(f"Failed to kick user {user_id}: {e}")
+
+async def continue_to_file_access(client, message, grp_id, file_id):
+    file_link = f"https://t.me/{temp.U_NAME}?start=file_{grp_id}_{file_id}"
+    await message.reply_text(
+        f"✅ Verification complete! [Get your file here]({file_link})",
+        disable_web_page_preview=True
+    )
+
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     if EMOJI_MODE:
         await message.react(emoji=random.choice(REACTIONS), big=True)
     m = message
+    
+    # Verification completion handler
     if len(m.command) == 2 and m.command[1].startswith(('notcopy', 'sendall')):
         _, userid, verify_id, file_id = m.command[1].split("_", 3)
         user_id = int(userid)
         grp_id = temp.VERIFICATIONS.get(user_id, 0)
-        settings = await get_settings(grp_id)         
-        verify_id_info = await db.get_verify_id_info(user_id, verify_id)
-        if not verify_id_info or verify_id_info["verified"]:
-            await message.reply("<b>ʟɪɴᴋ ᴇxᴘɪʀᴇᴅ ᴛʀʏ ᴀɢᴀɪɴ...</b>")
-            return  
-        ist_timezone = pytz.timezone('Asia/Kolkata')
-        if await db.is_user_verified(user_id):
-            key = "second_time_verified"
+        settings = await get_settings(grp_id)
+        
+        verify_info = await db.get_verify_id_info(user_id, verify_id)
+        if not verify_info or verify_info.get("verified"):
+            return await message.reply("<b>Link expired or already used!</b>")
+        
+        verification_stage = verify_info.get("stage", 1)
+        ist = pytz.timezone('Asia/Kolkata')
+        
+        if verification_stage == 1:
+            await db.update_first_verified(user_id, datetime.now(ist))
+            msg = script.VERIFY_COMPLETE_TEXT
         else:
-            key = "last_verified"
-        current_time = datetime.now(tz=ist_timezone)
-        result = await db.update_notcopy_user(user_id, {key:current_time})
-        await db.update_verify_id_info(user_id, verify_id, {"verified":True})
-        num = 2 if key == "second_time_verified" else 1
-        msg = script.SECOND_VERIFY_COMPLETE_TEXT if key == "second_time_verified" else script.VERIFY_COMPLETE_TEXT
+            await db.update_second_verified(user_id, datetime.now(ist))
+            msg = script.SECOND_VERIFY_COMPLETE_TEXT
+        
+        await db.update_verify_id_info(user_id, verify_id, {"verified": True})
         
         if message.command[1].startswith('sendall'):
             verifiedfiles = f"https://telegram.me/{temp.U_NAME}?start=allfiles_{grp_id}_{file_id}"
         else:
             verifiedfiles = f"https://telegram.me/{temp.U_NAME}?start=file_{grp_id}_{file_id}"
             
-        await client.send_message(settings['log'], script.VERIFIED_LOG_TEXT.format(m.from_user.mention, user_id, datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d %B %Y'), num))
+        await client.send_message(
+            settings['log'], 
+            script.VERIFIED_LOG_TEXT.format(
+                m.from_user.mention, 
+                user_id, 
+                datetime.now(pytz.timezone('Asia/Kolkata')).strftime('%d %B %Y'), 
+                verification_stage
+            )
+        )
+        
         btn = [[
             InlineKeyboardButton("✅ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ɢᴇᴛ ꜰɪʟᴇ ✅", url=verifiedfiles),
         ]]
@@ -215,21 +248,48 @@ async def start(client, message):
     if not await db.has_premium_access(user_id):
         try:
             grp_id = int(grp_id)
-            user_verified = await db.is_user_verified(user_id)
             settings = await get_settings(grp_id)
-            is_second_shortener = await db.use_second_shortener(user_id, settings.get('verify_time', TWO_VERIFY_GAP)) 
             
-            if settings.get("is_verify", IS_VERIFY) and (not user_verified or is_second_shortener):                
-                verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-                await db.create_verify_id(user_id, verify_id)
-                temp.VERIFICATIONS[user_id] = grp_id
-                
-                if message.command[1].startswith('allfiles'):
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
+            # Check verification stages
+            first_verified = await db.is_first_verified(user_id)
+            second_verified = await db.is_second_verified(user_id)
+            
+            if settings.get("is_verify", IS_VERIFY):
+                if not first_verified:
+                    # First verification (no timeout)
+                    verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+                    await db.create_verify_id(user_id, verify_id, stage=1)
+                    temp.VERIFICATIONS[user_id] = grp_id
+                    
+                    if message.command[1].startswith('allfiles'):
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, False)
+                    else:
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, False)
+                    
+                    howtodownload = settings.get('tutorial', TUTORIAL)
+                    msg = script.VERIFICATION_TEXT
+                    
+                elif first_verified and not second_verified:
+                    # Second verification (with timeout)
+                    verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+                    await db.create_verify_id(user_id, verify_id, stage=2)
+                    temp.VERIFICATIONS[user_id] = grp_id
+                    
+                    if message.command[1].startswith('allfiles'):
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, True)
+                    else:
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, True)
+                    
+                    howtodownload = settings.get('tutorial_2', TUTORIAL_2)
+                    msg = script.SECOND_VERIFICATION_TEXT
+                    
+                    # Start timeout for second verification
+                    asyncio.create_task(
+                        second_verification_timeout(client, user_id, grp_id, settings["verify_time"])
+                    )
                 else:
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
-                
-                howtodownload = settings.get('tutorial_2', TUTORIAL_2) if is_second_shortener else settings.get('tutorial', TUTORIAL)
+                    # Both verifications completed - allow access
+                    return await continue_to_file_access(client, message, grp_id, file_id)
                 
                 buttons = [[
                     InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)
@@ -238,11 +298,9 @@ async def start(client, message):
                 ]]
                 
                 reply_markup=InlineKeyboardMarkup(buttons)
-                msg = script.SECOND_VERIFICATION_TEXT if is_second_shortener else script.VERIFICATION_TEXT
-                
                 n=await m.reply_text(
                     text=msg.format(message.from_user.mention),
-                    protect_content = True,
+                    protect_content=True,
                     reply_markup=reply_markup,
                     parse_mode=enums.ParseMode.HTML
                 )
