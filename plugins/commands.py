@@ -211,45 +211,50 @@ async def start(client, message):
         await log_error(client, f"Got Error In Force Subscription Funtion.\n\n Error - {n}")
         print(f"Error In Fsub :- {n}")
 
-    user_id = m.from_user.id
-    if not await db.has_premium_access(user_id):
-        try:
-            grp_id = int(grp_id)
-            user_verified = await db.is_user_verified(user_id)
-            settings = await get_settings(grp_id)
-            is_second_shortener = await db.use_second_shortener(user_id, settings.get('verify_time', TWO_VERIFY_GAP)) 
+   user_id = m.from_user.id
+if not await db.has_premium_access(user_id):
+    try:
+        grp_id = int(grp_id)
+        first_verified = await db.is_user_verified(user_id)
+        second_verified = await db.is_second_verified(user_id, settings.get('verify_time', TWO_VERIFY_GAP))  # <- You must define this function
+        settings = await get_settings(grp_id)
+
+        # Show verification if either first or second is missing
+        if settings.get("is_verify", IS_VERIFY) and (not first_verified or not second_verified):
+            verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+            await db.create_verify_id(user_id, verify_id)
+            temp.VERIFICATIONS[user_id] = grp_id
+
+            if message.command[1].startswith('allfiles'):
+                verify = await get_shortlink(
+                    f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}",
+                    grp_id, not second_verified)
+            else:
+                verify = await get_shortlink(
+                    f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}",
+                    grp_id, not second_verified)
+
+            howtodownload = settings.get('tutorial_2', TUTORIAL_2) if not second_verified else settings.get('tutorial', TUTORIAL)
+
+            buttons = [[
+                InlineKeyboardButton("♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)
+            ], [
+                InlineKeyboardButton("⁉️ ʜᴏᴡ ᴛᴏ ᴠᴇʀɪꜰʏ ⁉️", url=howtodownload)
+            ]]
             
-            if settings.get("is_verify", IS_VERIFY) and (not user_verified or is_second_shortener):                
-                verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-                await db.create_verify_id(user_id, verify_id)
-                temp.VERIFICATIONS[user_id] = grp_id
-                
-                if message.command[1].startswith('allfiles'):
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
-                else:
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
-                
-                howtodownload = settings.get('tutorial_2', TUTORIAL_2) if is_second_shortener else settings.get('tutorial', TUTORIAL)
-                
-                buttons = [[
-                    InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)
-                ],[
-                    InlineKeyboardButton(text="⁉️ ʜᴏᴡ ᴛᴏ ᴠᴇʀɪꜰʏ ⁉️", url=howtodownload)
-                ]]
-                
-                reply_markup=InlineKeyboardMarkup(buttons)
-                msg = script.SECOND_VERIFICATION_TEXT if is_second_shortener else script.VERIFICATION_TEXT
-                
-                n=await m.reply_text(
-                    text=msg.format(message.from_user.mention),
-                    protect_content = True,
-                    reply_markup=reply_markup,
-                    parse_mode=enums.ParseMode.HTML
-                )
-                await asyncio.sleep(300) 
-                await n.delete()
-                await m.delete()
-                return
+            reply_markup = InlineKeyboardMarkup(buttons)
+            msg_text = script.SECOND_VERIFICATION_TEXT if not second_verified else script.VERIFICATION_TEXT
+
+            n = await m.reply_text(
+                text=msg_text.format(message.from_user.mention),
+                protect_content=True,
+                reply_markup=reply_markup,
+                parse_mode=enums.ParseMode.HTML
+            )
+            await asyncio.sleep(300)
+            await n.delete()
+            await m.delete()
+            return
         except Exception as e:
             await log_error(client, f"Got Error In Verification Funtion.\n\n Error - {e}")
             print(f"Error In Verification - {e}")
