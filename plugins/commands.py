@@ -1082,24 +1082,6 @@ async def set_tutorial_2(client, message):
     await message.reply_text(f"<b>ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴄʜᴀɴɢᴇᴅ ᴛᴜᴛᴏʀɪᴀʟ 2 ꜰᴏʀ {title}</b>\n\nʟɪɴᴋ - {tutorial}", disable_web_page_preview=True)
     await client.send_message(LOG_API_CHANNEL, f"#Set_Tutorial_2_Video\n\nɢʀᴏᴜᴘ ɴᴀᴍᴇ : {title}\n\nɢʀᴏᴜᴘ ɪᴅ : {grp_id}\n\nɪɴᴠɪᴛᴇ ʟɪɴᴋ : {invite_link}\n\nᴜᴘᴅᴀᴛᴇᴅ ʙʏ : {message.from_user.username}")
 
-@Client.on_message(filters.command('set_tutorial_3'))
-async def set_tutorial_3(client, message):
-    grp_id = message.chat.id
-    title = message.chat.title
-    invite_link = await client.export_chat_invite_link(grp_id)
-    if not await is_check_admin(client, grp_id, message.from_user.id):
-        return await message.reply_text('<b>ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ</b>')
-    chat_type = message.chat.type
-    if chat_type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return await message.reply_text(f"<b>ᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ɢʀᴏᴜᴘ...\n\nGroup Name: {title}\nGroup ID: {grp_id}\nGroup Invite Link: {invite_link}</b>")
-    try:
-        tutorial = message.text.split(" ", 1)[1]
-    except:
-        return await message.reply_text("<b>Command Incomplete!!\n\nuse like this -</b>\n\n<code>/set_tutorial https://t.me/Aksbackup</code>")
-    await save_group_settings(grp_id, 'tutorial_3', tutorial)
-    await message.reply_text(f"<b>ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ᴄʜᴀɴɢᴇᴅ ᴛᴜᴛᴏʀɪᴀʟ 3 ꜰᴏʀ {title}</b>\n\nʟɪɴᴋ - {tutorial}", disable_web_page_preview=True)
-    await client.send_message(LOG_API_CHANNEL, f"#Set_Tutorial_3_Video\n\nɢʀᴏᴜᴘ ɴᴀᴍᴇ : {title}\n\nɢʀᴏᴜᴘ ɪᴅ : {grp_id}\n\nɪɴᴠɪᴛᴇ ʟɪɴᴋ : {invite_link}\n\nᴜᴘᴅᴀᴛᴇᴅ ʙʏ : {message.from_user.username}")
-
 @Client.on_message(filters.command("reset_group"))
 async def reset_group_command(client, message):
     grp_id = message.chat.id
@@ -1119,14 +1101,10 @@ async def reset_group_command(client, message):
     await save_group_settings(grp_id, 'api', SHORTENER_API)
     await save_group_settings(grp_id, 'shortner_two', SHORTENER_WEBSITE2)
     await save_group_settings(grp_id, 'api_two', SHORTENER_API2)
-    await save_group_settings(grp_id, 'shortner_three', SHORTENER_WEBSITE3)
-    await save_group_settings(grp_id, 'api_three', SHORTENER_API3)
     await save_group_settings(grp_id, 'verify_time', TWO_VERIFY_GAP)
-    await save_group_settings(grp_id, 'third_verify_time', THREE_VERIFY_GAP)
     await save_group_settings(grp_id, 'template', IMDB_TEMPLATE)
     await save_group_settings(grp_id, 'tutorial', TUTORIAL)
     await save_group_settings(grp_id, 'tutorial_2', TUTORIAL_2)
-    await save_group_settings(grp_id, 'tutorial_3', TUTORIAL_3)
     await save_group_settings(grp_id, 'caption', CUSTOM_FILE_CAPTION)
     await save_group_settings(grp_id, 'log', LOG_VR_CHANNEL)
     await save_group_settings(grp_id, 'is_verify', IS_VERIFY)
@@ -1241,38 +1219,6 @@ async def set_shortner_2(c, m):
         await save_group_settings(grp_id, 'api_two', SHORTENER_API2)
         await m.reply_text(f"<b><u>💢 ᴇʀʀᴏʀ ᴏᴄᴄᴏᴜʀᴇᴅ!!</u>\n\nᴀᴜᴛᴏ ᴀᴅᴅᴇᴅ ʙᴏᴛ ᴏᴡɴᴇʀ ᴅᴇꜰᴜʟᴛ sʜᴏʀᴛɴᴇʀ\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄʜᴀɴɢᴇ ᴛʜᴇɴ ᴜsᴇ ᴄᴏʀʀᴇᴄᴛ ꜰᴏʀᴍᴀᴛ ᴏʀ ᴀᴅᴅ ᴠᴀʟɪᴅ sʜᴏʀᴛʟɪɴᴋ ᴅᴏᴍᴀɪɴ ɴᴀᴍᴇ & ᴀᴘɪ\n\nʏᴏᴜ ᴄᴀɴ ᴀʟsᴏ ᴄᴏɴᴛᴀᴄᴛ ᴏᴜʀ <a href=https://t.me/SilentXBotz_Support>sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ</a> ꜰᴏʀ sᴏʟᴠᴇ ᴛʜɪs ɪssᴜᴇ...\n\nʟɪᴋᴇ -\n\n`/set_shortner_2 mdiskshortner.link e7beb3c8f756dfa15d0bec495abc65f58c0dfa95`\n\n💔 ᴇʀʀᴏʀ - <code>{e}</code></b>", quote=True)
 
-@Client.on_message(filters.command('set_shortner_3'))
-async def set_shortner_3(c, m):
-    grp_id = m.chat.id
-    title = m.chat.title
-    if not await is_check_admin(c, grp_id, m.from_user.id):
-        return await m.reply_text('<b>ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ</b>')
-    if len(m.text.split()) == 1:
-        await m.reply("<b>ᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ʟɪᴋᴇ ᴛʜɪꜱ - \n\n`/set_shortner_3 omegalinks.in a7ac9b3012c67d7491414cf272d82593c75f6cbb`</b>")
-        return
-    sts = await m.reply("<b>♻️ ᴄʜᴇᴄᴋɪɴɢ...</b>")
-    await asyncio.sleep(1.2)
-    await sts.delete()
-    chat_type = m.chat.type
-    if chat_type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return await m.reply_text("<b>ᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ɪɴ ɢʀᴏᴜᴘ...</b>")
-    try:
-        URL = m.command[1]
-        API = m.command[2]
-        await save_group_settings(grp_id, 'shortner_three', URL)
-        await save_group_settings(grp_id, 'api_three', API)
-        await m.reply_text(f"<b><u>✅ sᴜᴄᴄᴇssꜰᴜʟʟʏ ʏᴏᴜʀ sʜᴏʀᴛɴᴇʀ ɪs ᴀᴅᴅᴇᴅ</u>\n\nꜱʜᴏʀᴛɴᴇʀ ꜱɪᴛᴇ - `{URL}`\n\nꜱʜᴏʀᴛɴᴇʀ ᴀᴘɪ - `{API}`</b>", quote=True)
-        user_id = m.from_user.id
-        user_info = f"@{m.from_user.username}" if m.from_user.username else f"{m.from_user.mention}"
-        link = (await c.get_chat(m.chat.id)).invite_link
-        grp_link = f"[{m.chat.title}]({link})"
-        log_message = f"#New_Shortner_Set_For_3nd_Verify\n\nɴᴀᴍᴇ - {user_info}\n\nɪᴅ - `{user_id}`\n\nꜱʜᴏʀᴛɴᴇʀ ꜱɪᴛᴇ - {URL}\n\nꜱʜᴏʀᴛɴᴇʀ ᴀᴘɪ - `{API}`\n\nɢʀᴏᴜᴘ ʟɪɴᴋ - `{grp_link}`\n\nɢʀᴏᴜᴘ ɪᴅ : `{grp_id}`"
-        await c.send_message(LOG_API_CHANNEL, log_message, disable_web_page_preview=True)
-    except Exception as e:
-        await save_group_settings(grp_id, 'shortner_three', SHORTENER_WEBSITE3)
-        await save_group_settings(grp_id, 'api_three', SHORTENER_API3)
-        await m.reply_text(f"<b><u>💢 ᴇʀʀᴏʀ ᴏᴄᴄᴏᴜʀᴇᴅ!!</u>\n\nᴀᴜᴛᴏ ᴀᴅᴅᴇᴅ ʙᴏᴛ ᴏᴡɴᴇʀ ᴅᴇꜰᴜʟᴛ sʜᴏʀᴛɴᴇʀ\n\nɪꜰ ʏᴏᴜ ᴡᴀɴᴛ ᴛᴏ ᴄʜᴀɴɢᴇ ᴛʜᴇɴ ᴜsᴇ ᴄᴏʀʀᴇᴄᴛ ꜰᴏʀᴍᴀᴛ ᴏʀ ᴀᴅᴅ ᴠᴀʟɪᴅ sʜᴏʀᴛʟɪɴᴋ ᴅᴏᴍᴀɪɴ ɴᴀᴍᴇ & ᴀᴘɪ\n\nʏᴏᴜ ᴄᴀɴ ᴀʟsᴏ ᴄᴏɴᴛᴀᴄᴛ ᴏᴜʀ <a href=https://t.me/SilentXBotz_Support>sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ</a> ꜰᴏʀ sᴏʟᴠᴇ ᴛʜɪs ɪssᴜᴇ...\n\nʟɪᴋᴇ -\n\n`/set_shortner_3 mdiskshortner.link e7beb3c8f756dfa15d0bec495abc65f58c0dfa95`\n\n💔 ᴇʀʀᴏʀ - <code>{e}</code></b>", quote=True)        
-
 @Client.on_message(filters.command('set_log_channel'))
 async def set_log(client, message):
     grp_id = message.chat.id
@@ -1307,8 +1253,7 @@ async def set_log(client, message):
     link = (await client.get_chat(message.chat.id)).invite_link
     grp_link = f"[{message.chat.title}]({link})"
     log_message = f"#New_Log_Channel_Set\n\nɴᴀᴍᴇ - {user_info}\n\nɪᴅ - `{user_id}`\n\nʟᴏɢ ᴄʜᴀɴɴᴇʟ ɪᴅ - `{log}`\nɢʀᴏᴜᴘ ʟɪɴᴋ - `{grp_link}`\n\nɢʀᴏᴜᴘ ɪᴅ : `{grp_id}`"
-    await client.send_message(LOG_API_CHANNEL, log_message, disable_web_page_preview=True) 
-
+    await client.send_message(LOG_API_CHANNEL, log_message, disable_web_page_preview=True)
 
 @Client.on_message(filters.command('set_time'))
 async def set_time(client, message):
@@ -1327,24 +1272,6 @@ async def set_time(client, message):
     await save_group_settings(grp_id, 'verify_time', time)
     await message.reply_text(f"<b>✅️ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ꜱᴇᴛ 2ɴᴅ ᴠᴇʀɪꜰʏ ᴛɪᴍᴇ ꜰᴏʀ {title}\n\nᴛɪᴍᴇ - <code>{time}</code></b>")
     await client.send_message(LOG_API_CHANNEL, f"#Set_2nd_Verify_Time\n\nɢʀᴏᴜᴘ ɴᴀᴍᴇ : {title}\n\nɢʀᴏᴜᴘ ɪᴅ : {grp_id}\n\nɪɴᴠɪᴛᴇ ʟɪɴᴋ : {invite_link}\n\nᴜᴘᴅᴀᴛᴇᴅ ʙʏ : {message.from_user.username}")
-
-@Client.on_message(filters.command('set_time_2'))
-async def set_time_2(client, message):
-    chat_type = message.chat.type
-    if chat_type not in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        return await message.reply_text("<b>ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ɪɴ ɢʀᴏᴜᴘ...</b>")       
-    grp_id = message.chat.id
-    title = message.chat.title
-    invite_link = await client.export_chat_invite_link(grp_id)
-    if not await is_check_admin(client, grp_id, message.from_user.id):
-        return await message.reply_text('<b>ʏᴏᴜ ᴀʀᴇ ɴᴏᴛ ᴀᴅᴍɪɴ ɪɴ ᴛʜɪꜱ ɢʀᴏᴜᴘ</b>')
-    try:
-        time = int(message.text.split(" ", 1)[1])
-    except:
-        return await message.reply_text("<b>ᴄᴏᴍᴍᴀɴᴅ ɪɴᴄᴏᴍᴘʟᴇᴛᴇ\n\nᴜꜱᴇ ᴛʜɪꜱ ᴄᴏᴍᴍᴀɴᴅ ʟɪᴋᴇ ᴛʜɪꜱ - <code>/set_time 3600</code> [ ᴛɪᴍᴇ ᴍᴜꜱᴛ ʙᴇ ɪɴ ꜱᴇᴄᴏɴᴅꜱ ]</b>")   
-    await save_group_settings(grp_id, 'third_verify_time', time)
-    await message.reply_text(f"<b>✅️ ꜱᴜᴄᴄᴇꜱꜱꜰᴜʟʟʏ ꜱᴇᴛ 3ʀᴅ ᴠᴇʀɪꜰʏ ᴛɪᴍᴇ ꜰᴏʀ {title}\n\nᴛɪᴍᴇ - <code>{time}</code></b>")
-    await client.send_message(LOG_API_CHANNEL, f"#Set_3rd_Verify_Time\n\nɢʀᴏᴜᴘ ɴᴀᴍᴇ : {title}\n\nɢʀᴏᴜᴘ ɪᴅ : {grp_id}\n\nɪɴᴠɪᴛᴇ ʟɪɴᴋ : {invite_link}\n\nᴜᴘᴅᴀᴛᴇᴅ ʙʏ : {message.from_user.username}")
 
 @Client.on_message(filters.command('details'))
 async def all_settings(client, message):
@@ -1369,23 +1296,15 @@ async def all_settings(client, message):
 <b>ɴᴀᴍᴇ</b> - <code>{settings["shortner_two"]}</code>
 <b>ᴀᴘɪ</b> - <code>{settings["api_two"]}</code>
 
-✅️ <b><u>𝟹ʀᴅ ᴠᴇʀɪꜰʏ sʜᴏʀᴛɴᴇʀ</u></b>
-<b>ɴᴀᴍᴇ</b> - <code>{settings["shortner_three"]}</code>
-<b>ᴀᴘɪ</b> - <code>{settings["api_three"]}</code>
-
 ⏰ <b>2ɴᴅ ᴠᴇʀɪꜰɪᴄᴀᴛɪᴏɴ ᴛɪᴍᴇ</b> - <code>{settings["verify_time"]}</code>
-
-⏰ <b>𝟹ʀᴅ ᴠᴇʀɪꜰɪᴄᴀᴛɪᴏɴ ᴛɪᴍᴇ</b> - <code>{settings['third_verify_time']}</code>
 
 1️⃣ <b>ᴛᴜᴛᴏʀɪᴀʟ ʟɪɴᴋ 1</b> - {settings['tutorial']}
 
 2️⃣ <b>ᴛᴜᴛᴏʀɪᴀʟ ʟɪɴᴋ 2</b> - {settings.get('tutorial_2', TUTORIAL_2)}
 
-3️⃣ <b>ᴛᴜᴛᴏʀɪᴀʟ ʟɪɴᴋ 3</b> - {settings.get('tutorial_3', TUTORIAL_3)}
-
 📝 <b>ʟᴏɢ ᴄʜᴀɴɴᴇʟ ɪᴅ</b> - <code>{settings['log']}</code>
 
-🚫 ꜰꜱᴜʙ ᴄʜᴀɴɴᴇʟ ɪᴅ - `{settings['fsub_id']}`
+🚫 <b>ꜰꜱᴜʙ ᴄʜᴀɴɴᴇʟ ɪᴅ</b> - <code>{settings['fsub_id']}</code>
 
 🎯 <b>ɪᴍᴅʙ ᴛᴇᴍᴘʟᴀᴛᴇ</b> - <code>{settings['template']}</code>
 
