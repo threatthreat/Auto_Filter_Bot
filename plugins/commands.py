@@ -210,8 +210,8 @@ async def start(client, message):
     except Exception as n:
         await log_error(client, f"Got Error In Force Subscription Funtion.\n\n Error - {n}")
         print(f"Error In Fsub :- {n}")
-        
-  user_id = m.from_user.id
+
+    user_id = m.from_user.id
     if not await db.has_premium_access(user_id):
         try:
             grp_id = int(grp_id)
