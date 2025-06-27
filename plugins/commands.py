@@ -148,7 +148,7 @@ async def start(client, message):
             await message.reply_text("Invalid refer!")
             return
         if user_id == message.from_user.id:
-            await message.reply_text("Hᴇʏ Dᴜᴅᴇ, Yᴏᴜ Cᴀɴ'ᴛ Rᴇғᴇʀ Yᴏᴜʀsᴇʟғ 🤣!\n\nsʜᴀʀᴇ ʟɪɴᴋ ʏᴏᴜʀ ғʀɪᴇɴᴅ ᴀɴᴅ ɢᴇᴛ 10 ʀᴇғᴇʀʀᴀʟ ᴘᴏɪɴᴛ ɪғ ʏᴏᴜ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛɪɴɢ 100 ʀᴇғᴇʀᴀʟ ᴘᴏɪɴᴛs ᴛʜᴇɴ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ 1 ᴍᴏɴᴛʜ ғʀᴇᴇ ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀsʜɪᴘ.")
+            await message.reply_text("Hᴇʏ Dᴜᴅᴇ, Yᴏᴜ Cᴀɴ'ᴛ Rᴇғᴇʀ Yᴏᴜʀsᴇʟғ 🤣!\n\nsʜᴀʀᴇ ʟɪɴᴋ ʏᴏᴜʀ ғʀɪᴇɴᴅ ᴀɴᴅ ɢᴇᴛ 10 ʀᴇғᴇʀʀᴀʟ ᴘᴏɪɴᴛ ɪғ ʏᴏᴜ ᴀʀᴇ ᴄᴏʟʟᴇᴄᴛɪɴɢ 100 ʀᴇғᴇʀʀᴀʟ ᴘᴏɪɴᴛs ᴛʜᴇɴ ʏᴏᴜ ᴄᴀɴ ɢᴇᴛ 1 ᴍᴏɴᴛʜ ғʀᴇᴇ ᴘʀᴇᴍɪᴜᴍ ᴍᴇᴍʙᴇʀsʜɪᴘ.")
             return
         if referdb.is_user_in_list(message.from_user.id):
             await message.reply_text("Yᴏᴜ ʜᴀᴠᴇ ʙᴇᴇɴ ᴀʟʀᴇᴀᴅʏ ɪɴᴠɪᴛᴇᴅ ❗")
@@ -177,7 +177,7 @@ async def start(client, message):
         else:
             referdb.add_refer_points(user_id, fromuse)
             await message.reply_text(f"You have been successfully invited by {uss.mention}!")
-            await client.send_message(user_id, f"𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀! 𝗬𝗼𝘂 𝘄𝗼𝗻 𝟭𝟬 𝗥𝗲𝗳𝗲𝗿𝗿𝗮𝗹 𝗽𝗼𝗶𝗻𝘁 𝗯𝗲𝗰𝗮𝘂𝘀𝗲 𝗬𝗼𝘂 𝗵𝗮𝘃𝗲 𝗯𝗲𝗲𝗻 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝗜𝗻𝘃𝗶𝘁𝗲𝗱 ☞{message.from_user.mention}!")
+            await client.send_message(user_id, f"𝗖𝗼𝗻𝗴𝗿𝗮𝘁𝘂𝗹𝗮𝘁𝗶𝗼𝗻𝘀! 𝗬𝗼𝘂 𝘄𝗼𝗻 𝟭𝟬 𝗥𝗲𝗳𝗲𝗿𝗿𝗮𝗟 𝗽𝗼𝗶𝗻𝘁 𝗯𝗲𝗰𝗮𝘂𝘀𝗲 𝗬𝗼𝘂 𝗵𝗮𝘃𝗲 𝗯𝗲𝗲𝗻 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝗜𝗻𝘃𝗶𝘁𝗲𝗱 ☞{message.from_user.mention}!")
         return
         
     if len(message.command) == 2 and message.command[1].startswith('getfile'):
@@ -240,48 +240,48 @@ async def start(client, message):
                     reply_to_message_id=message.id
                 )
                 return
-   except Exception as n:
-    await log_error(client, f"Got Error In Force Subscription Funtion.\n\n Error - {n}")
-    print(f"Error In Fsub :- {n}")
+    except Exception as n:
+        await log_error(client, f"Got Error In Force Subscription Function.\n\n Error - {n}")
+        print(f"Error In Fsub :- {n}")
 
-user_id = m.from_user.id
-if not await db.has_premium_access(user_id):
-    try:
-        grp_id = int(grp_id)
-        settings = await get_settings(grp_id)
-        
-        # Check verification stages - REPLACED is_first_verified and is_second_verified
-        is_verified = await db.is_user_verified(user_id)
-        second_time_verified = await db.user_verified(user_id)
-        
-        if settings.get("is_verify", IS_VERIFY):
-            if not is_verified:
-                # First verification (no timeout)
-                verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-                await db.create_verify_id(user_id, verify_id)
-                temp.VERIFICATIONS[user_id] = grp_id
-                
-                if message.command[1].startswith('allfiles'):
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, False)
-                else:
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, False)
-                
-                howtodownload = settings.get('tutorial', TUTORIAL)
-                msg = script.VERIFICATION_TEXT
-                
-            elif is_verified and not second_time_verified:
-                # Second verification (with timeout)
-                verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
-                await db.create_verify_id(user_id, verify_id)
-                temp.VERIFICATIONS[user_id] = grp_id
-                
-                if message.command[1].startswith('allfiles'):
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, True)
-                else:
-                    verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, True)
-                
-                howtodownload = settings.get('tutorial_2', TUTORIAL_2)
-                msg = script.SECOND_VERIFICATION_TEXT
+    user_id = m.from_user.id
+    if not await db.has_premium_access(user_id):
+        try:
+            grp_id = int(grp_id)
+            settings = await get_settings(grp_id)
+            
+            # Check verification stages - REPLACED is_first_verified and is_second_verified
+            is_verified = await db.is_user_verified(user_id)
+            second_time_verified = await db.user_verified(user_id)
+            
+            if settings.get("is_verify", IS_VERIFY):
+                if not is_verified:
+                    # First verification (no timeout)
+                    verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+                    await db.create_verify_id(user_id, verify_id)
+                    temp.VERIFICATIONS[user_id] = grp_id
+                    
+                    if message.command[1].startswith('allfiles'):
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, False)
+                    else:
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, False)
+                    
+                    howtodownload = settings.get('tutorial', TUTORIAL)
+                    msg = script.VERIFICATION_TEXT
+                    
+                elif is_verified and not second_time_verified:
+                    # Second verification (with timeout)
+                    verify_id = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
+                    await db.create_verify_id(user_id, verify_id)
+                    temp.VERIFICATIONS[user_id] = grp_id
+                    
+                    if message.command[1].startswith('allfiles'):
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, True)
+                    else:
+                        verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, True)
+                    
+                    howtodownload = settings.get('tutorial_2', TUTORIAL_2)
+                    msg = script.SECOND_VERIFICATION_TEXT
                     
                     # Start timeout for second verification
                     asyncio.create_task(
@@ -309,9 +309,9 @@ if not await db.has_premium_access(user_id):
                 await m.delete()
                 return
         except Exception as e:
-            await log_error(client, f"Got Error In Verification Funtion.\n\n Error - {e}")
+            await log_error(client, f"Got Error In Verification Function.\n\n Error - {e}")
             print(f"Error In Verification - {e}")
-            await message.reply_text(f"Something Want Wrong ! Message Here - @SilentXBotz_Support")
+            await message.reply_text(f"Something Went Wrong! Message Here - @SilentXBotz_Support")
             
     if data.split("-", 1)[0] == "BATCH":
         sts = await message.reply("<b>Please wait...</b>")
