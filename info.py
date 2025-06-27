@@ -67,10 +67,10 @@ TUTORIAL = environ.get("TUTORIAL", "https://t.me/Bombardiro_Crocodiloa")
 TUTORIAL_2 = environ.get("TUTORIAL_2", "https://t.me/Bombardiro_Crocodiloa")
 
 # Shortener
-SHORTENER_API = environ.get("SHORTENER_API", "")
-SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "")
-SHORTENER_API2 = environ.get("SHORTENER_API2", "")
-SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "")
+SHORTENER_API = environ.get("SHORTENER_API", "659546a38bd0c5480b3b76bf63f2d982c21c93cf")
+SHORTENER_WEBSITE = environ.get("SHORTENER_WEBSITE", "shortner.in")
+SHORTENER_API2 = environ.get("SHORTENER_API2", "659546a38bd0c5480b3b76bf63f2d982c21c93cf")
+SHORTENER_WEBSITE2 = environ.get("SHORTENER_WEBSITE2", "shortner.in")
 
 # Verification Gaps
 TWO_VERIFY_GAP = int(environ.get('TWO_VERIFY_GAP', "1200"))  # 6 mins or override in env
