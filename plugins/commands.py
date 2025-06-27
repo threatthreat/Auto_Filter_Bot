@@ -228,12 +228,14 @@ async def start(client, message):
                     verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=sendall_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
                 else:
                     verify = await get_shortlink(f"https://telegram.me/{temp.U_NAME}?start=notcopy_{user_id}_{verify_id}_{file_id}", grp_id, is_second_shortener)
-if user_verified and is_second_shortener:
-    msg = script.SECOND_VERIFICATION_TEXT
-    howtodownload = settings.get('tutorial_2', TUTORIAL_2)
-else:
-    msg = script.VERIFICATION_TEXT
-    howtodownload = settings.get('tutorial', TUTORIAL)
+try:
+    # some logic above
+    if user_verified and is_second_shortener:
+        msg = script.SECOND_VERIFICATION_TEXT
+        howtodownload = settings.get('tutorial_2', TUTORIAL_2)
+    else:
+        msg = script.VERIFICATION_TEXT
+        howtodownload = settings.get('tutorial', TUTORIAL)
 
 buttons = [[
     InlineKeyboardButton(text="♻️ ᴄʟɪᴄᴋ ʜᴇʀᴇ ᴛᴏ ᴠᴇʀɪꜰʏ ♻️", url=verify)
